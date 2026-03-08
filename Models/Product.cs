@@ -7,7 +7,7 @@ public class Product
     [Key]
     public int Id { get; set; }
 
-    public string Name { get; set; } = null!;
+    public string Name { get; set; } = String.Empty;
 
     public decimal Price { get; set; }
 
@@ -17,7 +17,6 @@ public class Product
 
     public string? Category { get; set; }
 
-    public DateTime CreatedAt { get; set; }
+    public DateTime LastUpdatedAt { get; set; }
 
-    public DateTime? LastUpdatedAt { get; set; }
 }

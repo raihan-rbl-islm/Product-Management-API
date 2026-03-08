@@ -5,11 +5,11 @@ namespace ProductManagementApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProductsController : ControllerBase
+public class ProductController : ControllerBase
 {
     private readonly IProductService _productService;
 
-    public ProductsController(IProductService productService)
+    public ProductController(IProductService productService)
     {
         _productService = productService;
     }
@@ -17,15 +17,16 @@ public class ProductsController : ControllerBase
     [HttpPost]
     public IActionResult CreateProduct([FromBody] CreateProductDto createProductDto)
     {
-        var newProductId = _productService.CreateProduct(createProductDto);
-
-        return CreatedAtAction(nameof(ReadProduct), new { id = newProductId }, createProductDto);
+        var newProduct = _productService.CreateProduct(createProductDto);
+        return Ok(newProduct);
     }
 
     [HttpPut("{id:int}")]
     public IActionResult UpdateProduct(int id, [FromBody] UpdateProductDto updateProductDto)
     {
-        _productService.UpdateProduct(id, updateProductDto);
+        var success = _productService.UpdateProduct(id, updateProductDto);
+
+        if (!success) return NotFound();
 
         return NoContent();
     }

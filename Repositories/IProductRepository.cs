@@ -7,5 +7,5 @@ public interface IProductRepository
     Product? GetById(int id);
     void Update(Product product);
     void SaveChanges();
-    List<Product> GetAll();
+    IEnumerable<Product> GetAll();
 }

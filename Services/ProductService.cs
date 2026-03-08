@@ -12,7 +12,7 @@ public class ProductService : IProductService
         _productRepository = productRepository;
     }
 
-    public int CreateProduct(CreateProductDto createProductDto)
+    public ReadProductDto CreateProduct(CreateProductDto createProductDto)
     {
         var newProduct = new Product
         {
@@ -21,18 +21,28 @@ public class ProductService : IProductService
             Description = createProductDto.Description,
             Category = createProductDto.Category,
             Stock = createProductDto.Stock ?? 0,
-            CreatedAt = DateTime.UtcNow
+            LastUpdatedAt = DateTime.UtcNow
         };
 
         _productRepository.Add(newProduct);
         _productRepository.SaveChanges();
 
-        return newProduct.Id;
+        return new ReadProductDto
+        {
+            Id = newProduct.Id,
+            Name = newProduct.Name,
+            Price = newProduct.Price,
+            Description = newProduct.Description,
+            Category = newProduct.Category,
+            Stock = newProduct.Stock
+        };
     }
 
-    public void UpdateProduct(int id, UpdateProductDto updateProductDto)
+    public bool UpdateProduct(int id, UpdateProductDto updateProductDto)
     {
-        var product = _productRepository.GetById(id) ?? throw new KeyNotFoundException($"Product with ID {id} was not found.");
+        var product = _productRepository.GetById(id);
+
+        if (product == null) return false;
 
         product.Price = updateProductDto.Price;
         product.Description = updateProductDto.Description;
@@ -41,6 +51,8 @@ public class ProductService : IProductService
 
         _productRepository.Update(product);
         _productRepository.SaveChanges();
+
+        return true;
     }
 
     public ReadProductDto? ReadProduct(int id)
@@ -51,6 +63,7 @@ public class ProductService : IProductService
 
         return new ReadProductDto
         {
+            Id = product.Id,
             Name = product.Name,
             Price = product.Price,
             Description = product.Description,
@@ -70,6 +83,7 @@ public class ProductService : IProductService
             readProductDtos.Add(
              new ReadProductDto
              {
+                 Id = item.Id,
                  Name = item.Name,
                  Price = item.Price,
                  Description = item.Description,

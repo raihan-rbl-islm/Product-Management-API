@@ -3,39 +3,37 @@ namespace ProductManagementApi.Repositories;
 
 public class ProductRepository : IProductRepository
 {
-    private readonly List<Product> _products = [];
-    private int _nextId = 1;
+
+    private readonly AppDbContext _appDbContext;
+
+    public ProductRepository(AppDbContext appDbContext)
+    {
+        this._appDbContext = appDbContext;
+    }
 
     public void Add(Product product)
     {
-        product.Id = _nextId++;
-        _products.Add(product);
+        _appDbContext.Products.Add(product);
     }
 
     public Product? GetById(int id)
     {
-        return _products.FirstOrDefault(p => p.Id == id);
+        return _appDbContext.Products.FirstOrDefault(p => p.Id == id);
     }
 
     public void Update(Product product)
     {
-        var existingProduct = GetById(product.Id);
-        if (existingProduct != null)
-        {
-            existingProduct.Name = product.Name;
-            existingProduct.Price = product.Price;
-            existingProduct.Description = product.Description;
-            existingProduct.Stock = product.Stock;
-            existingProduct.Category = product.Category;
-            existingProduct.LastUpdatedAt = DateTime.UtcNow;
-        }
+        product.LastUpdatedAt = DateTime.UtcNow;
+        _appDbContext.Products.Update(product);
     }
 
-
-    public List<Product> GetAll()
+    public IEnumerable<Product> GetAll()
     {
-        return _products;
+        return _appDbContext.Products.ToList();
     }
 
-    public void SaveChanges() { }
+    public void SaveChanges()
+    {
+        _appDbContext.SaveChanges();
+    }
 }
