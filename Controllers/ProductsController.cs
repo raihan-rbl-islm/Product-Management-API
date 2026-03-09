@@ -42,10 +42,9 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult ReadAllProducts()
+    public IActionResult ReadAllProducts([FromQuery] decimal? minPrice, [FromQuery] decimal? maxPrice)
     {
-        var productDtos = _productService.ReadAllProducts();
-
+        var productDtos = _productService.GetByPriceRange(minPrice ?? 0, maxPrice ?? decimal.MaxValue);
         return Ok(productDtos);
     }
 

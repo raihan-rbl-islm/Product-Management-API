@@ -7,6 +7,6 @@ public interface IProductService
     ReadProductDto CreateProduct(CreateProductDto createProductDto);
     bool UpdateProduct(int id, UpdateProductDto updateProductDto);
     ReadProductDto? ReadProduct(int id);
-    List<ReadProductDto> ReadAllProducts();
     bool DeleteProduct(int id);
+    IEnumerable<ReadProductDto> GetByPriceRange(decimal minPrice, decimal maxPrice);
 }

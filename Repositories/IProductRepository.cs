@@ -7,6 +7,6 @@ public interface IProductRepository
     Product? GetById(int id);
     void Update(Product product);
     void SaveChanges();
-    IEnumerable<Product> GetAll();
     void Delete(Product product);
+    IEnumerable<Product> GetByPriceRange(decimal minPrice, decimal maxPrice);
 }

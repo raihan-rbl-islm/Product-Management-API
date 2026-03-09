@@ -10,7 +10,7 @@ public record ReadProductDto
 
     public string? Description { get; init; }
 
-    public string? Category { get; init; }
+    public string? CategoryName { get; init; }
 
     public int Stock { get; init; }
 }
