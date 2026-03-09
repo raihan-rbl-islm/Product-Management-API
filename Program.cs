@@ -1,6 +1,7 @@
 using ProductManagementApi.Repositories;
 using Microsoft.EntityFrameworkCore;
 using ProductManagementApi.Services;
+using ProductManagementApi.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,8 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();

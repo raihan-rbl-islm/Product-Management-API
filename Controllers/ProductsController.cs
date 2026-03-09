@@ -8,16 +8,19 @@ namespace ProductManagementApi.Controllers;
 public class ProductsController : ControllerBase
 {
     private readonly IProductService _productService;
+    private readonly ILogger<ProductsController> _logger;
 
-    public ProductsController(IProductService productService)
+    public ProductsController(IProductService productService, ILogger<ProductsController> logger)
     {
         _productService = productService;
+        _logger = logger;
     }
 
     [HttpPost]
     public IActionResult CreateProduct([FromBody] CreateProductDto createProductDto)
     {
         var newProduct = _productService.CreateProduct(createProductDto);
+        _logger.LogInformation("Product {ProductName} created successfully at {Timestamp}", newProduct.Name, DateTime.UtcNow);
         return Ok(newProduct);
     }
 
