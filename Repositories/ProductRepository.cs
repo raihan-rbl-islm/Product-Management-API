@@ -31,6 +31,11 @@ public class ProductRepository : IProductRepository
     {
         return _appDbContext.Products.ToList();
     }
+    
+    public void Delete(Product product)
+    {
+        _appDbContext.Products.Remove(product);
+    }
 
     public void SaveChanges()
     {

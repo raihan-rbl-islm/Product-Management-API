@@ -8,4 +8,5 @@ public interface IProductService
     bool UpdateProduct(int id, UpdateProductDto updateProductDto);
     ReadProductDto? ReadProduct(int id);
     List<ReadProductDto> ReadAllProducts();
+    bool DeleteProduct(int id);
 }

@@ -5,11 +5,11 @@ namespace ProductManagementApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProductController : ControllerBase
+public class ProductsController : ControllerBase
 {
     private readonly IProductService _productService;
 
-    public ProductController(IProductService productService)
+    public ProductsController(IProductService productService)
     {
         _productService = productService;
     }
@@ -47,5 +47,15 @@ public class ProductController : ControllerBase
         var productDtos = _productService.ReadAllProducts();
 
         return Ok(productDtos);
+    }
+
+    [HttpDelete("{id:int}")]
+    public IActionResult DeleteProduct(int id)
+    {
+        var success = _productService.DeleteProduct(id);
+
+        if (!success) return NotFound();
+
+        return NoContent();
     }
 }

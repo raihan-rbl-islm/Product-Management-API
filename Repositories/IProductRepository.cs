@@ -8,4 +8,5 @@ public interface IProductRepository
     void Update(Product product);
     void SaveChanges();
     IEnumerable<Product> GetAll();
+    void Delete(Product product);
 }
