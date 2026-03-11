@@ -12,7 +12,7 @@ using ProductManagementApi.Repositories;
 namespace Product_Management_API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260309071845_InitialProjectSetup")]
+    [Migration("20260311053615_InitialProjectSetup")]
     partial class InitialProjectSetup
     {
         /// <inheritdoc />
