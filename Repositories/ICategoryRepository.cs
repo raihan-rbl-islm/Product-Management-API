@@ -7,4 +7,5 @@ public interface ICategoryRepository
     Category? GetById(int id);
     IEnumerable<Category> GetAll();
     void SaveChanges();
+    void Delete(Category category);
 }

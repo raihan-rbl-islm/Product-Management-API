@@ -29,4 +29,9 @@ public class CategoryRepository : ICategoryRepository
     {
         _appDbContext.SaveChanges();
     }
+
+    public void Delete(Category category)
+    {
+        _appDbContext.Categories.Remove(category);
+    }
 }

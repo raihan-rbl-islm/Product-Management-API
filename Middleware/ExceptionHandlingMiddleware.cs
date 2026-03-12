@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Text.Json;
+
 namespace ProductManagementApi.Middleware;
 
 public class ExceptionHandlingMiddleware
@@ -32,17 +33,36 @@ public class ExceptionHandlingMiddleware
 
     private async Task HandleExceptionAsync(HttpContext context, Exception ex)
     {
-        _logger.LogError(ex, "An unhandled exception occurred while processing the request.");
+        _logger.LogError(ex, "An exception occurred while processing the request.");
 
-        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+        var statusCode = ex switch
+        {
+            KeyNotFoundException => HttpStatusCode.NotFound,
+            ArgumentException => HttpStatusCode.BadRequest,
+            _ => HttpStatusCode.InternalServerError
+        };
+
+        var title = ex switch
+        {
+            KeyNotFoundException => "Not Found",
+            ArgumentException => "Bad Request",
+            _ => "Internal Server Error"
+        };
+
+        var detail = ex switch
+        {
+            KeyNotFoundException or ArgumentException => ex.Message,
+            _ => "An unexpected error occurred. Please try again later."
+        };
+
+        context.Response.StatusCode = (int)statusCode;
         context.Response.ContentType = "application/problem+json";
 
         var problemDetails = new ProblemDetails
         {
-            Status = (int)HttpStatusCode.InternalServerError,
-            // Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
-            Title = "Internal Server Error",
-            Detail = "An unexpected error occurred. Please try again later.",
+            Status = (int)statusCode,
+            Title = title,
+            Detail = detail,
             Instance = context.Request.Path
         };
 

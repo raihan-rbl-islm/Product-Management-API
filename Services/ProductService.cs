@@ -6,20 +6,31 @@ namespace ProductManagementApi.Services;
 public class ProductService : IProductService
 {
     private readonly IProductRepository _productRepository;
+    private readonly ICategoryRepository _categoryRepository;
 
-    public ProductService(IProductRepository productRepository)
+    public ProductService(IProductRepository productRepository, ICategoryRepository categoryRepository)
     {
         _productRepository = productRepository;
+        _categoryRepository = categoryRepository;
     }
 
     public ReadProductDto CreateProduct(CreateProductDto createProductDto)
     {
+        if (createProductDto.CategoryId.HasValue)
+        {
+            var category = _categoryRepository.GetById(createProductDto.CategoryId.Value);
+            if (category == null)
+            {
+                throw new KeyNotFoundException($"Category with ID {createProductDto.CategoryId} not found.");
+            }
+        }
+
         var newProduct = new Product
         {
             Name = createProductDto.Name,
             Price = createProductDto.Price,
             Description = createProductDto.Description,
-            // We ignore Category mapping here for simplicity unless we have a CategoryId
+            CategoryId = createProductDto.CategoryId,
             Stock = createProductDto.Stock ?? 0,
             LastUpdatedAt = DateTime.UtcNow
         };
@@ -33,21 +44,29 @@ public class ProductService : IProductService
             Name = newProduct.Name,
             Price = newProduct.Price,
             Description = newProduct.Description,
-            CategoryName = null, // Not set during creation for now
+            CategoryName = newProduct.Category?.Name,
             Stock = newProduct.Stock
         };
     }
 
     public bool UpdateProduct(int id, UpdateProductDto updateProductDto)
     {
-        // Tracking: GetById fetches the entity which is then tracked by EF
         var product = _productRepository.GetById(id);
 
         if (product == null) return false;
 
+        if (updateProductDto.CategoryId.HasValue)
+        {
+            var category = _categoryRepository.GetById(updateProductDto.CategoryId.Value);
+            if (category == null)
+            {
+                throw new KeyNotFoundException($"Category with ID {updateProductDto.CategoryId} not found.");
+            }
+        }
+
         product.Price = updateProductDto.Price;
         product.Description = updateProductDto.Description;
-        // Skipping Category update for now as it's a separate entity
+        product.CategoryId = updateProductDto.CategoryId;
         product.Stock = updateProductDto.Stock;
 
         _productRepository.Update(product);
@@ -62,8 +81,6 @@ public class ProductService : IProductService
 
         if (product == null) return null;
 
-        // Lazy Loading: Accessing product.Category here will trigger a database query
-        // because we enabled LazyLoadingProxies and Category is virtual.
         var categoryName = product.Category?.Name;
 
         return new ReadProductDto

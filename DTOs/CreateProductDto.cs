@@ -14,8 +14,8 @@ public record CreateProductDto
     [MaxLength(500, ErrorMessage = "Description cannot exceed 500 characters.")]
     public string? Description { get; init; }
 
-    [MaxLength(50, ErrorMessage = "Category cannot exceed 50 characters.")]
-    public string? Category { get; init; }
+    [Range(1, int.MaxValue, ErrorMessage = "Category ID must be a positive integer.")]
+    public int? CategoryId { get; init; }
 
     [Range(0, int.MaxValue, ErrorMessage = "Stock cannot be negative.")]
     public int? Stock { get; init; }
