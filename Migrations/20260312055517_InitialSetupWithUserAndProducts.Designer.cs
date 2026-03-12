@@ -12,8 +12,8 @@ using ProductManagementApi.Repositories;
 namespace Product_Management_API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260311053615_InitialProjectSetup")]
-    partial class InitialProjectSetup
+    [Migration("20260312055517_InitialSetupWithUserAndProducts")]
+    partial class InitialSetupWithUserAndProducts
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -78,6 +78,23 @@ namespace Product_Management_API.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("ProductManagementApi.Models.User", b =>
+                {
+                    b.Property<string>("Username")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Username");
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("ProductManagementApi.Models.Product", b =>

@@ -19,6 +19,7 @@ public class ProductsController : ControllerBase
         _logger = logger;
     }
 
+    [Authorize(Roles = "User,Admin")]
     [HttpPost]
     public IActionResult CreateProduct([FromBody] CreateProductDto createProductDto)
     {
@@ -27,6 +28,7 @@ public class ProductsController : ControllerBase
         return Ok(newProduct);
     }
 
+    [Authorize(Roles = "User,Admin")]
     [HttpPut("{id:int}")]
     public IActionResult UpdateProduct(int id, [FromBody] UpdateProductDto updateProductDto)
     {
@@ -37,6 +39,7 @@ public class ProductsController : ControllerBase
         return NoContent();
     }
 
+    [AllowAnonymous]
     [HttpGet("{id:int}")]
     public IActionResult ReadProduct(int id)
     {
@@ -47,6 +50,7 @@ public class ProductsController : ControllerBase
         return Ok(productDto);
     }
 
+    [AllowAnonymous]
     [HttpGet]
     public IActionResult ReadAllProducts([FromQuery] decimal? minPrice, [FromQuery] decimal? maxPrice)
     {
@@ -54,6 +58,7 @@ public class ProductsController : ControllerBase
         return Ok(productDtos);
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
     public IActionResult DeleteProduct(int id)
     {

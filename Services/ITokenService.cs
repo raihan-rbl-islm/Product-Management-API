@@ -1,6 +1,8 @@
+using ProductManagementApi.DTOs;
+
 namespace ProductManagementApi.Services;
 
 public interface ITokenService
 {
-    string GenerateJwtToken(string username);
+    string GenerateJwtToken(ReadUserDTO readUserDTO);
 }
