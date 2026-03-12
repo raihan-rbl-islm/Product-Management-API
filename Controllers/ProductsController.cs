@@ -52,10 +52,9 @@ public class ProductsController : ControllerBase
 
     [AllowAnonymous]
     [HttpGet]
-    public IActionResult ReadAllProducts([FromQuery] decimal? minPrice, [FromQuery] decimal? maxPrice)
+    public IActionResult QueryProducts([FromQuery] ProductQueryParameterDto queryParameters)
     {
-        var productDtos = _productService.GetByPriceRange(minPrice ?? 0, maxPrice ?? decimal.MaxValue);
-        return Ok(productDtos);
+        return Ok(_productService.QueryProducts(queryParameters));
     }
 
     [Authorize(Roles = "Admin")]

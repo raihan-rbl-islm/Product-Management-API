@@ -8,5 +8,5 @@ public interface IProductService
     bool UpdateProduct(int id, UpdateProductDto updateProductDto);
     ReadProductDto? ReadProduct(int id);
     bool DeleteProduct(int id);
-    IEnumerable<ReadProductDto> GetByPriceRange(decimal minPrice, decimal maxPrice);
+    PagedResponse<ReadProductDto> QueryProducts(ProductQueryParameterDto queryParameters);
 }

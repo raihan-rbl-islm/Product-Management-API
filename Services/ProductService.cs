@@ -106,19 +106,26 @@ public class ProductService : IProductService
         return true;
     }
 
-    public IEnumerable<ReadProductDto> GetByPriceRange(decimal minPrice, decimal maxPrice)
+    public PagedResponse<ReadProductDto> QueryProducts(ProductQueryParameterDto queryParameters)
     {
-        var products = _productRepository.GetByPriceRange(minPrice, maxPrice);
+        var (products, totalCount) = _productRepository.QueryProducts(queryParameters);
 
-        return [.. products.Select(p =>
-            new ReadProductDto {
-                Id = p.Id,
-                Name = p.Name,
-                Price = p.Price,
-                Description = p.Description,
-                CategoryName = p.Category?.Name,
-                Stock = p.Stock
-            })
-        ];
+        var productDtos = products.Select(p => new ReadProductDto
+        {
+            Id = p.Id,
+            Name = p.Name,
+            Price = p.Price,
+            Description = p.Description,
+            CategoryName = p.Category?.Name,
+            Stock = p.Stock
+        });
+
+        return new PagedResponse<ReadProductDto>
+        {
+            Items = productDtos,
+            TotalCount = totalCount,
+            PageNumber = queryParameters.PageNumber,
+            PageSize = queryParameters.PageSize
+        };
     }
 }

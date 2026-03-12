@@ -1,4 +1,5 @@
 using ProductManagementApi.Models;
+using ProductManagementApi.DTOs;
 namespace ProductManagementApi.Repositories;
 
 public interface IProductRepository
@@ -8,5 +9,5 @@ public interface IProductRepository
     void Update(Product product);
     void SaveChanges();
     void Delete(Product product);
-    IEnumerable<Product> GetByPriceRange(decimal minPrice, decimal maxPrice);
+    (IEnumerable<Product>, int) QueryProducts(ProductQueryParameterDto queryParameters);
 }
