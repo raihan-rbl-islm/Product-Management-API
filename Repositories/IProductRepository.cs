@@ -5,9 +5,9 @@ namespace ProductManagementApi.Repositories;
 public interface IProductRepository
 {
     void Add(Product product);
-    Product? GetById(int id);
+    Task<Product?> GetByIdAsync(int id);
     void Update(Product product);
-    void SaveChanges();
+    Task SaveChangesAsync();
     void Delete(Product product);
-    (IEnumerable<ReadProductDto>, int) QueryProducts(ProductQueryParameterDto queryParameters);
+    Task<(IEnumerable<ReadProductDto>, int)> QueryProductsAsync(ProductQueryParameterDto queryParameters);
 }

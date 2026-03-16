@@ -4,9 +4,9 @@ namespace ProductManagementApi.Services;
 
 public interface ICategoryService
 {
-    ReadCategoryDto CreateCategory(CreateCategoryDto createCategoryDto);
-    ReadCategoryDto? GetCategoryById(int id);
-    IEnumerable<ReadCategoryDto> GetAllCategories();
-    bool UpdateCategory(int id, UpdateCategoryDto updateCategoryDto);
-    bool DeleteCategory(int id);
+    Task<ReadCategoryDto> CreateCategoryAsync(CreateCategoryDto createCategoryDto);
+    Task<ReadCategoryDto?> GetCategoryByIdAsync(int id);
+    Task<IEnumerable<ReadCategoryDto>> GetAllCategoriesAsync();
+    Task<bool> UpdateCategoryAsync(int id, UpdateCategoryDto updateCategoryDto);
+    Task<bool> DeleteCategoryAsync(int id);
 }

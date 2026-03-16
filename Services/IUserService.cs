@@ -4,6 +4,6 @@ namespace ProductManagementApi.Services;
 
 public interface IUserService
 {
-    ReadUserDTO? Authenticate(LoginRequestDto loginRequestDto);
-    ReadUserDTO? Register(RegisterRequestDto registerRequestDto);
+    Task<ReadUserDTO?> AuthenticateAsync(LoginRequestDto loginRequestDto);
+    Task<ReadUserDTO?> RegisterAsync(RegisterRequestDto registerRequestDto);
 }

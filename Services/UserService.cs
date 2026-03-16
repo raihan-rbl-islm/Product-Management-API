@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Identity.Data;
+using Microsoft.EntityFrameworkCore;
 using ProductManagementApi.Services;
 using ProductManagementApi.Repositories;
 using ProductManagementApi.DTOs;
@@ -16,15 +16,15 @@ public class UserService : IUserService
         _userRepository = userRepository;
         _mapper = mapper;
     }
-    public ReadUserDTO? Authenticate(LoginRequestDto loginRequestDto)
+    public async Task<ReadUserDTO?> AuthenticateAsync(LoginRequestDto loginRequestDto)
     {
-        var user = _userRepository.GetByUsername(loginRequestDto.Username);
+        var user = await _userRepository.GetByUsernameAsync(loginRequestDto.Username);
         return (user == null || user.Password != loginRequestDto.Password) ? null : _mapper.Map<ReadUserDTO>(user);
     }
 
-    public ReadUserDTO? Register(RegisterRequestDto registerRequestDto)
+    public async Task<ReadUserDTO?> RegisterAsync(RegisterRequestDto registerRequestDto)
     {
-        var existingUser = _userRepository.GetByUsername(registerRequestDto.Username);
+        var existingUser = await _userRepository.GetByUsernameAsync(registerRequestDto.Username);
 
         if (existingUser != null)
         {
@@ -34,7 +34,7 @@ public class UserService : IUserService
         var newUser = _mapper.Map<User>(registerRequestDto);
 
         _userRepository.Add(newUser);
-        _userRepository.SaveChanges();
+        await _userRepository.SaveChangesAsync();
 
         return _mapper.Map<ReadUserDTO>(newUser);
     }

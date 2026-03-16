@@ -21,21 +21,22 @@ public class CategoryRepository : ICategoryRepository
         _appDbContext.Categories.Add(category);
     }
 
-    public Category? GetById(int id)
+    public async Task<Category?> GetByIdAsync(int id)
     {
-        return _appDbContext.Categories.FirstOrDefault(c => c.Id == id);
+        return await _appDbContext.Categories.FirstOrDefaultAsync(c => c.Id == id);
     }
 
-    public IEnumerable<ReadCategoryDto> GetAll()
+    public async Task<IEnumerable<ReadCategoryDto>> GetAllAsync()
     {
-        return _appDbContext.Categories
+        return await _appDbContext.Categories
             .AsNoTracking()
-            .ProjectTo<ReadCategoryDto>(_mapper.ConfigurationProvider);
+            .ProjectTo<ReadCategoryDto>(_mapper.ConfigurationProvider)
+            .ToListAsync();
     }
 
-    public void SaveChanges()
+    public async Task SaveChangesAsync()
     {
-        _appDbContext.SaveChanges();
+        await _appDbContext.SaveChangesAsync();
     }
 
     public void Delete(Category category)

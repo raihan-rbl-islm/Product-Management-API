@@ -21,19 +21,18 @@ public class ProductsController : ControllerBase
 
     [Authorize(Roles = "User,Admin")]
     [HttpPost]
-    public IActionResult CreateProduct([FromBody] CreateProductDto createProductDto)
+    public async Task<IActionResult> CreateProduct([FromBody] CreateProductDto createProductDto)
     {
-        var newProduct = _productService.CreateProduct(createProductDto);
+        var newProduct = await _productService.CreateProductAsync(createProductDto);
         _logger.LogInformation("Product {ProductName} created successfully at {Timestamp}", newProduct.Name, DateTime.UtcNow);
         return Ok(newProduct);
     }
 
     [Authorize(Roles = "User,Admin")]
     [HttpPut("{id:int}")]
-    public IActionResult UpdateProduct(int id, [FromBody] UpdateProductDto updateProductDto)
+    public async Task<IActionResult> UpdateProduct(int id, [FromBody] UpdateProductDto updateProductDto)
     {
-        var success = _productService.UpdateProduct(id, updateProductDto);
-
+        var success = await _productService.UpdateProductAsync(id, updateProductDto);
         if (!success) return NotFound();
 
         return NoContent();
@@ -41,9 +40,9 @@ public class ProductsController : ControllerBase
 
     [AllowAnonymous]
     [HttpGet("{id:int}")]
-    public IActionResult ReadProduct(int id)
+    public async Task<IActionResult> ReadProduct(int id)
     {
-        var productDto = _productService.ReadProduct(id);
+        var productDto = await _productService.ReadProductAsync(id);
 
         if (productDto == null) return NotFound();
 
@@ -52,17 +51,16 @@ public class ProductsController : ControllerBase
 
     [AllowAnonymous]
     [HttpGet]
-    public IActionResult QueryProducts([FromQuery] ProductQueryParameterDto queryParameters)
+    public async Task<IActionResult> QueryProducts([FromQuery] ProductQueryParameterDto queryParameters)
     {
-        return Ok(_productService.QueryProducts(queryParameters));
+        return Ok(await _productService.QueryProductsAsync(queryParameters));
     }
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
-    public IActionResult DeleteProduct(int id)
+    public async Task<IActionResult> DeleteProduct(int id)
     {
-        var success = _productService.DeleteProduct(id);
-
+        var success = await _productService.DeleteProductAsync(id);
         if (!success) return NotFound();
 
         return NoContent();

@@ -5,8 +5,8 @@ namespace ProductManagementApi.Repositories;
 public interface ICategoryRepository
 {
     void Add(Category category);
-    Category? GetById(int id);
-    IEnumerable<ReadCategoryDto> GetAll();
-    void SaveChanges();
+    Task<Category?> GetByIdAsync(int id);
+    Task<IEnumerable<ReadCategoryDto>> GetAllAsync();
+    Task SaveChangesAsync();
     void Delete(Category category);
 }

@@ -17,11 +17,11 @@ public class ProductService : IProductService
         _mapper = mapper;
     }
 
-    public ReadProductDto CreateProduct(CreateProductDto createProductDto)
+    public async Task<ReadProductDto> CreateProductAsync(CreateProductDto createProductDto)
     {
         if (createProductDto.CategoryId.HasValue)
         {
-            var category = _categoryRepository.GetById(createProductDto.CategoryId.Value);
+            var category = await _categoryRepository.GetByIdAsync(createProductDto.CategoryId.Value);
             if (category == null)
             {
                 throw new KeyNotFoundException($"Category with ID {createProductDto.CategoryId} not found.");
@@ -32,20 +32,20 @@ public class ProductService : IProductService
         newProduct.LastUpdatedAt = DateTime.UtcNow;
 
         _productRepository.Add(newProduct);
-        _productRepository.SaveChanges();
+        await _productRepository.SaveChangesAsync();
 
         return _mapper.Map<ReadProductDto>(newProduct);
     }
 
-    public bool UpdateProduct(int id, UpdateProductDto updateProductDto)
+    public async Task<bool> UpdateProductAsync(int id, UpdateProductDto updateProductDto)
     {
-        var product = _productRepository.GetById(id);
+        var product = await _productRepository.GetByIdAsync(id);
 
         if (product == null) return false;
 
         if (updateProductDto.CategoryId.HasValue)
         {
-            var category = _categoryRepository.GetById(updateProductDto.CategoryId.Value);
+            var category = await _categoryRepository.GetByIdAsync(updateProductDto.CategoryId.Value);
             if (category == null)
             {
                 throw new KeyNotFoundException($"Category with ID {updateProductDto.CategoryId} not found.");
@@ -53,35 +53,35 @@ public class ProductService : IProductService
         }
 
         _mapper.Map(updateProductDto, product);
-        _productRepository.SaveChanges();
+        await _productRepository.SaveChangesAsync();
 
         return true;
     }
 
-    public ReadProductDto? ReadProduct(int id)
+    public async Task<ReadProductDto?> ReadProductAsync(int id)
     {
-        var product = _productRepository.GetById(id);
+        var product = await _productRepository.GetByIdAsync(id);
 
         return (product == null) ? null : _mapper.Map<ReadProductDto>(product);
     }
 
-    public bool DeleteProduct(int id)
+    public async Task<bool> DeleteProductAsync(int id)
     {
-        var product = _productRepository.GetById(id);
+        var product = await _productRepository.GetByIdAsync(id);
 
         if (product == null) return false;
 
         _productRepository.Delete(product);
-        _productRepository.SaveChanges();
+        await _productRepository.SaveChangesAsync();
 
         return true;
     }
 
-    public PagedResponse<ReadProductDto> QueryProducts(ProductQueryParameterDto queryParameters)
+    public async Task<PagedResponse<ReadProductDto>> QueryProductsAsync(ProductQueryParameterDto queryParameters)
     {
         // var (products, totalCount) = _productRepository.QueryProducts(queryParameters);
         // var productDtos = _mapper.Map<IEnumerable<ReadProductDto>>(products);
-        var (productDTOs, totalCount) = _productRepository.QueryProducts(queryParameters);
+        var (productDTOs, totalCount) = await _productRepository.QueryProductsAsync(queryParameters);
         return new PagedResponse<ReadProductDto>
         {
             Items = productDTOs,

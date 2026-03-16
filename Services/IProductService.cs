@@ -4,9 +4,9 @@ namespace ProductManagementApi.Services;
 
 public interface IProductService
 {
-    ReadProductDto CreateProduct(CreateProductDto createProductDto);
-    bool UpdateProduct(int id, UpdateProductDto updateProductDto);
-    ReadProductDto? ReadProduct(int id);
-    bool DeleteProduct(int id);
-    PagedResponse<ReadProductDto> QueryProducts(ProductQueryParameterDto queryParameters);
+    Task<ReadProductDto> CreateProductAsync(CreateProductDto createProductDto);
+    Task<bool> UpdateProductAsync(int id, UpdateProductDto updateProductDto);
+    Task<ReadProductDto?> ReadProductAsync(int id);
+    Task<bool> DeleteProductAsync(int id);
+    Task<PagedResponse<ReadProductDto>> QueryProductsAsync(ProductQueryParameterDto queryParameters);
 }

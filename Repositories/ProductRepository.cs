@@ -13,8 +13,8 @@ public class ProductRepository : IProductRepository
 
     public ProductRepository(AppDbContext appDbContext, IMapper mapper)
     {
-        this._appDbContext = appDbContext;
-        this._mapper = mapper;
+        _appDbContext = appDbContext;
+        _mapper = mapper;
     }
 
     public void Add(Product product)
@@ -22,9 +22,9 @@ public class ProductRepository : IProductRepository
         _appDbContext.Products.Add(product);
     }
 
-    public Product? GetById(int id)
+    public async Task<Product?> GetByIdAsync(int id)
     {
-        return _appDbContext.Products.FirstOrDefault(p => p.Id == id);
+        return await _appDbContext.Products.FirstOrDefaultAsync(p => p.Id == id);
     }
 
     public void Update(Product product)
@@ -38,12 +38,12 @@ public class ProductRepository : IProductRepository
         _appDbContext.Products.Remove(product);
     }
 
-    public void SaveChanges()
+    public async Task SaveChangesAsync()
     {
-        _appDbContext.SaveChanges();
+        await _appDbContext.SaveChangesAsync();
     }
 
-    public (IEnumerable<ReadProductDto>, int) QueryProducts(ProductQueryParameterDto queryParameters)
+    public async Task<(IEnumerable<ReadProductDto>, int)> QueryProductsAsync(ProductQueryParameterDto queryParameters)
     {
         var query = _appDbContext.Products.AsNoTracking().AsQueryable();
 
@@ -87,13 +87,14 @@ public class ProductRepository : IProductRepository
             };
         }
 
-        int totalCount = query.Count();
+        int totalCount = await query.CountAsync();
 
         var skip = (queryParameters.PageNumber - 1) * queryParameters.PageSize;
-        var productDtos = query
+        var productDtos = await query
                 .Skip(skip)
                 .Take(queryParameters.PageSize)
-                .ProjectTo<ReadProductDto>(_mapper.ConfigurationProvider);
+                .ProjectTo<ReadProductDto>(_mapper.ConfigurationProvider)
+                .ToListAsync();
 
         return (productDtos, totalCount);
     }

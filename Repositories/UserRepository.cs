@@ -1,5 +1,5 @@
 using ProductManagementApi.Repositories;
-
+using Microsoft.EntityFrameworkCore;
 namespace ProductManagementApi.Models;
 
 public class UserRepository : IUserRepository
@@ -11,9 +11,9 @@ public class UserRepository : IUserRepository
         _appDbContext = appDbContext;
     }
 
-    public User? GetByUsername(string username)
+    public async Task<User?> GetByUsernameAsync(string username)
     {
-        return _appDbContext.Users.FirstOrDefault(u => u.Username == username);
+        return await _appDbContext.Users.FirstOrDefaultAsync(u => u.Username == username);
     }
 
     public void Add(User user)
@@ -21,9 +21,9 @@ public class UserRepository : IUserRepository
         _appDbContext.Users.Add(user);
     }
 
-    public void SaveChanges()
+    public async Task SaveChangesAsync()
     {
-        _appDbContext.SaveChanges();
+        await _appDbContext.SaveChangesAsync();
     }
 
 }

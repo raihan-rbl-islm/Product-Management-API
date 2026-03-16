@@ -3,7 +3,7 @@ namespace ProductManagementApi.Repositories;
 
 public interface IUserRepository
 {
-    User? GetByUsername(string username);
+    Task<User?> GetByUsernameAsync(string username);
     void Add(User user);
-    void SaveChanges();
+    Task SaveChangesAsync();
 }

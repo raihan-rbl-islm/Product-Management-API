@@ -18,9 +18,9 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("login")]
-    public IActionResult Login([FromBody] LoginRequestDto loginRequestDto)
+    public async Task<IActionResult> Login([FromBody] LoginRequestDto loginRequestDto)
     {
-        ReadUserDTO? readUserDTO = _userService.Authenticate(loginRequestDto);
+        ReadUserDTO? readUserDTO = await _userService.AuthenticateAsync(loginRequestDto);
 
         if (readUserDTO != null)
         {
@@ -32,9 +32,9 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("register")]
-    public IActionResult Register([FromBody] RegisterRequestDto registerRequestDto)
+    public async Task<IActionResult> Register([FromBody] RegisterRequestDto registerRequestDto)
     {
-        ReadUserDTO? readUserDTO = _userService.Register(registerRequestDto);
+        ReadUserDTO? readUserDTO = await _userService.RegisterAsync(registerRequestDto);
 
         if (readUserDTO != null)
         {

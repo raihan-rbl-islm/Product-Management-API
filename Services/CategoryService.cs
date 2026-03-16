@@ -1,6 +1,7 @@
 using ProductManagementApi.DTOs;
 using ProductManagementApi.Models;
 using ProductManagementApi.Repositories;
+using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 namespace ProductManagementApi.Services;
 
@@ -15,47 +16,47 @@ public class CategoryService : ICategoryService
         _mapper = mapper;
     }
 
-    public ReadCategoryDto CreateCategory(CreateCategoryDto createCategoryDto)
+    public async Task<ReadCategoryDto> CreateCategoryAsync(CreateCategoryDto createCategoryDto)
     {
         var newCategory = _mapper.Map<Category>(createCategoryDto);
 
         _categoryRepository.Add(newCategory);
-        _categoryRepository.SaveChanges();
+        await _categoryRepository.SaveChangesAsync();
 
         return _mapper.Map<ReadCategoryDto>(newCategory);
     }
 
-    public ReadCategoryDto? GetCategoryById(int id)
+    public async Task<ReadCategoryDto?> GetCategoryByIdAsync(int id)
     {
-        var category = _categoryRepository.GetById(id);
+        var category = await _categoryRepository.GetByIdAsync(id);
         return (category == null) ? null : _mapper.Map<ReadCategoryDto>(category);
     }
 
-    public IEnumerable<ReadCategoryDto> GetAllCategories()
+    public async Task<IEnumerable<ReadCategoryDto>> GetAllCategoriesAsync()
     {
-        return _categoryRepository.GetAll();
+        return (await _categoryRepository.GetAllAsync()).Select(c => _mapper.Map<ReadCategoryDto>(c));
     }
 
-    public bool UpdateCategory(int id, UpdateCategoryDto updateCategoryDto)
+    public async Task<bool> UpdateCategoryAsync(int id, UpdateCategoryDto updateCategoryDto)
     {
-        var category = _categoryRepository.GetById(id);
+        var category = await _categoryRepository.GetByIdAsync(id);
 
         if (category == null) return false;
 
         _mapper.Map(updateCategoryDto, category);
-        _categoryRepository.SaveChanges();
+        await _categoryRepository.SaveChangesAsync();
 
         return true;
     }
 
-    public bool DeleteCategory(int id)
+    public async Task<bool> DeleteCategoryAsync(int id)
     {
-        var category = _categoryRepository.GetById(id);
+        var category = await _categoryRepository.GetByIdAsync(id);
 
         if (category == null) return false;
 
         _categoryRepository.Delete(category);
-        _categoryRepository.SaveChanges();
+        await _categoryRepository.SaveChangesAsync();
 
         return true;
     }
