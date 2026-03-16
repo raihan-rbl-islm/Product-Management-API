@@ -1,17 +1,20 @@
 using ProductManagementApi.DTOs;
 using ProductManagementApi.Models;
 using ProductManagementApi.Repositories;
+using AutoMapper;
 namespace ProductManagementApi.Services;
 
 public class ProductService : IProductService
 {
     private readonly IProductRepository _productRepository;
     private readonly ICategoryRepository _categoryRepository;
+    private readonly IMapper _mapper;
 
-    public ProductService(IProductRepository productRepository, ICategoryRepository categoryRepository)
+    public ProductService(IProductRepository productRepository, ICategoryRepository categoryRepository, IMapper mapper)
     {
         _productRepository = productRepository;
         _categoryRepository = categoryRepository;
+        _mapper = mapper;
     }
 
     public ReadProductDto CreateProduct(CreateProductDto createProductDto)
@@ -25,28 +28,13 @@ public class ProductService : IProductService
             }
         }
 
-        var newProduct = new Product
-        {
-            Name = createProductDto.Name,
-            Price = createProductDto.Price,
-            Description = createProductDto.Description,
-            CategoryId = createProductDto.CategoryId,
-            Stock = createProductDto.Stock ?? 0,
-            LastUpdatedAt = DateTime.UtcNow
-        };
+        var newProduct = _mapper.Map<Product>(createProductDto);
+        newProduct.LastUpdatedAt = DateTime.UtcNow;
 
         _productRepository.Add(newProduct);
         _productRepository.SaveChanges();
 
-        return new ReadProductDto
-        {
-            Id = newProduct.Id,
-            Name = newProduct.Name,
-            Price = newProduct.Price,
-            Description = newProduct.Description,
-            CategoryName = newProduct.Category?.Name,
-            Stock = newProduct.Stock
-        };
+        return _mapper.Map<ReadProductDto>(newProduct);
     }
 
     public bool UpdateProduct(int id, UpdateProductDto updateProductDto)
@@ -64,12 +52,7 @@ public class ProductService : IProductService
             }
         }
 
-        product.Price = updateProductDto.Price;
-        product.Description = updateProductDto.Description;
-        product.CategoryId = updateProductDto.CategoryId;
-        product.Stock = updateProductDto.Stock;
-
-        _productRepository.Update(product);
+        _mapper.Map(updateProductDto, product);
         _productRepository.SaveChanges();
 
         return true;
@@ -79,19 +62,7 @@ public class ProductService : IProductService
     {
         var product = _productRepository.GetById(id);
 
-        if (product == null) return null;
-
-        var categoryName = product.Category?.Name;
-
-        return new ReadProductDto
-        {
-            Id = product.Id,
-            Name = product.Name,
-            Price = product.Price,
-            Description = product.Description,
-            CategoryName = categoryName,
-            Stock = product.Stock
-        };
+        return (product == null) ? null : _mapper.Map<ReadProductDto>(product);
     }
 
     public bool DeleteProduct(int id)
@@ -108,21 +79,12 @@ public class ProductService : IProductService
 
     public PagedResponse<ReadProductDto> QueryProducts(ProductQueryParameterDto queryParameters)
     {
-        var (products, totalCount) = _productRepository.QueryProducts(queryParameters);
-
-        var productDtos = products.Select(p => new ReadProductDto
-        {
-            Id = p.Id,
-            Name = p.Name,
-            Price = p.Price,
-            Description = p.Description,
-            CategoryName = p.Category?.Name,
-            Stock = p.Stock
-        });
-
+        // var (products, totalCount) = _productRepository.QueryProducts(queryParameters);
+        // var productDtos = _mapper.Map<IEnumerable<ReadProductDto>>(products);
+        var (productDTOs, totalCount) = _productRepository.QueryProducts(queryParameters);
         return new PagedResponse<ReadProductDto>
         {
-            Items = productDtos,
+            Items = productDTOs,
             TotalCount = totalCount,
             PageNumber = queryParameters.PageNumber,
             PageSize = queryParameters.PageSize

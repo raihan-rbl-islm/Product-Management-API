@@ -9,5 +9,5 @@ public interface IProductRepository
     void Update(Product product);
     void SaveChanges();
     void Delete(Product product);
-    (IEnumerable<Product>, int) QueryProducts(ProductQueryParameterDto queryParameters);
+    (IEnumerable<ReadProductDto>, int) QueryProducts(ProductQueryParameterDto queryParameters);
 }

@@ -22,5 +22,4 @@ public class Product
     public virtual Category? Category { get; set; }
 
     public DateTime LastUpdatedAt { get; set; }
-
 }

@@ -1,16 +1,20 @@
 using ProductManagementApi.Models;
 using Microsoft.EntityFrameworkCore;
 using ProductManagementApi.DTOs;
+using AutoMapper.QueryableExtensions;
+using AutoMapper;
 namespace ProductManagementApi.Repositories;
 
 public class ProductRepository : IProductRepository
 {
 
     private readonly AppDbContext _appDbContext;
+    private readonly IMapper _mapper;
 
-    public ProductRepository(AppDbContext appDbContext)
+    public ProductRepository(AppDbContext appDbContext, IMapper mapper)
     {
         this._appDbContext = appDbContext;
+        this._mapper = mapper;
     }
 
     public void Add(Product product)
@@ -39,20 +43,10 @@ public class ProductRepository : IProductRepository
         _appDbContext.SaveChanges();
     }
 
-    public IEnumerable<Product> GetByPriceRange(decimal minPrice, decimal maxPrice)
-    {
-        return [.. _appDbContext.Products
-            .AsNoTracking()
-            .Include(p => p.Category)
-            .Where(p =>
-                p.Price >= minPrice &&
-                p.Price <= maxPrice)
-        ];
-    }
-
-    public (IEnumerable<Product>, int) QueryProducts(ProductQueryParameterDto queryParameters)
+    public (IEnumerable<ReadProductDto>, int) QueryProducts(ProductQueryParameterDto queryParameters)
     {
         var query = _appDbContext.Products.AsNoTracking().AsQueryable();
+
         if (queryParameters.MinPrice.HasValue)
         {
             query = query.Where(p => p.Price >= queryParameters.MinPrice.Value);
@@ -68,7 +62,7 @@ public class ProductRepository : IProductRepository
             var searchTerm = $"%{queryParameters.Search}%";
             query = query.Where(p =>
                 EF.Functions.ILike(p.Name, searchTerm) ||
-                EF.Functions.ILike(p.Description, searchTerm));
+                (p.Description != null && EF.Functions.ILike(p.Description, searchTerm)));
         }
 
         if (queryParameters.CategoryId.HasValue)
@@ -96,8 +90,11 @@ public class ProductRepository : IProductRepository
         int totalCount = query.Count();
 
         var skip = (queryParameters.PageNumber - 1) * queryParameters.PageSize;
-        query = query.Skip(skip).Take(queryParameters.PageSize);
+        var productDtos = query
+                .Skip(skip)
+                .Take(queryParameters.PageSize)
+                .ProjectTo<ReadProductDto>(_mapper.ConfigurationProvider);
 
-        return ([.. query], totalCount);
+        return (productDtos, totalCount);
     }
 }

@@ -1,56 +1,39 @@
 using ProductManagementApi.DTOs;
 using ProductManagementApi.Models;
 using ProductManagementApi.Repositories;
-
+using AutoMapper;
 namespace ProductManagementApi.Services;
 
 public class CategoryService : ICategoryService
 {
     private readonly ICategoryRepository _categoryRepository;
+    private readonly IMapper _mapper;
 
-    public CategoryService(ICategoryRepository categoryRepository)
+    public CategoryService(ICategoryRepository categoryRepository, IMapper mapper)
     {
         _categoryRepository = categoryRepository;
+        _mapper = mapper;
     }
 
     public ReadCategoryDto CreateCategory(CreateCategoryDto createCategoryDto)
     {
-        var category = new Category
-        {
-            Name = createCategoryDto.Name
-        };
+        var newCategory = _mapper.Map<Category>(createCategoryDto);
 
-        _categoryRepository.Add(category);
+        _categoryRepository.Add(newCategory);
         _categoryRepository.SaveChanges();
 
-        return new ReadCategoryDto
-        {
-            Id = category.Id,
-            Name = category.Name
-        };
+        return _mapper.Map<ReadCategoryDto>(newCategory);
     }
 
     public ReadCategoryDto? GetCategoryById(int id)
     {
         var category = _categoryRepository.GetById(id);
-
-        if (category == null) return null;
-
-        return new ReadCategoryDto
-        {
-            Id = category.Id,
-            Name = category.Name
-        };
+        return (category == null) ? null : _mapper.Map<ReadCategoryDto>(category);
     }
 
     public IEnumerable<ReadCategoryDto> GetAllCategories()
     {
-        var categories = _categoryRepository.GetAll();
-        return categories.Select(c => new ReadCategoryDto
-        {
-            Id = c.Id,
-            Name = c.Name
-        });
+        return _categoryRepository.GetAll();
     }
 
     public bool UpdateCategory(int id, UpdateCategoryDto updateCategoryDto)
@@ -59,7 +42,7 @@ public class CategoryService : ICategoryService
 
         if (category == null) return false;
 
-        category.Name = updateCategoryDto.Name;
+        _mapper.Map(updateCategoryDto, category);
         _categoryRepository.SaveChanges();
 
         return true;
@@ -73,6 +56,7 @@ public class CategoryService : ICategoryService
 
         _categoryRepository.Delete(category);
         _categoryRepository.SaveChanges();
+
         return true;
     }
 }

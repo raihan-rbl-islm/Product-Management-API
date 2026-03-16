@@ -1,13 +1,19 @@
 using ProductManagementApi.Models;
+using AutoMapper.QueryableExtensions;
+using AutoMapper;
+using ProductManagementApi.DTOs;
+using Microsoft.EntityFrameworkCore;
 namespace ProductManagementApi.Repositories;
 
 public class CategoryRepository : ICategoryRepository
 {
     private readonly AppDbContext _appDbContext;
+    private readonly IMapper _mapper;
 
-    public CategoryRepository(AppDbContext appDbContext)
+    public CategoryRepository(AppDbContext appDbContext, IMapper mapper)
     {
         _appDbContext = appDbContext;
+        _mapper = mapper;
     }
 
     public void Add(Category category)
@@ -20,9 +26,11 @@ public class CategoryRepository : ICategoryRepository
         return _appDbContext.Categories.FirstOrDefault(c => c.Id == id);
     }
 
-    public IEnumerable<Category> GetAll()
+    public IEnumerable<ReadCategoryDto> GetAll()
     {
-        return [.. _appDbContext.Categories];
+        return _appDbContext.Categories
+            .AsNoTracking()
+            .ProjectTo<ReadCategoryDto>(_mapper.ConfigurationProvider);
     }
 
     public void SaveChanges()
