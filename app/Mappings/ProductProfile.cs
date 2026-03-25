@@ -12,6 +12,8 @@ public class ProductProfile : AutoMapper.Profile
         CreateMap<UpdateProductDto, Product>();
         CreateMap<Product, ReadProductDto>();
         CreateMap<Category, ReadCategoryDto>();
+        CreateMap<CreateCategoryDto, Category>();
+        CreateMap<UpdateCategoryDto, Category>();
         CreateMap<User, ReadUserDTO>();
         CreateMap<RegisterRequestDto, User>();
     }

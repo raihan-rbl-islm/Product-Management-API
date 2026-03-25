@@ -1,6 +1,6 @@
 *.json
 *.csproj
-*.sln
+*.slnx
 bin/
 obj/
 *.http
