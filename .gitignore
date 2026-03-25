@@ -6,3 +6,4 @@ obj/
 *.http
 # /Properties
 *.md
+.DS_Store
